@@ -31,8 +31,10 @@ class CartController {
   }
 
   Future<List<CartResponseModel>> getMyCartData() async {
-    String? userUid = await SharedPreferenceHelper.getStringValue();
     try {
+      String? userUid = await SharedPreferenceHelper.getStringValue();
+      print("userUid...................");
+      print(userUid);
       QuerySnapshot querySnapshot = await _db
           .collection("myCart")
           .where("uid", isEqualTo: userUid.toString())
@@ -51,7 +53,10 @@ class CartController {
     }
   }
 
-  deleteCartItem({required String docId}) {
-    _db.collection("myCart").doc(docId).delete();
+  deleteCartItem({required String docId}) async {
+    print("safvan..........");
+    print(docId);
+
+    await _db.collection("myCart").doc(docId).delete();
   }
 }

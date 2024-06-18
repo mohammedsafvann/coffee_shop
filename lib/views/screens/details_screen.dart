@@ -149,15 +149,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             "price": widget.price,
                             "id": widget.id,
                             "quantity": "1"
-                          }).then((value) {
-                            FirebaseFirestore.instance
+                          }).then((value) async {
+                            await FirebaseFirestore.instance
                                 .collection("myCart")
                                 .doc(value.id)
                                 .update({"docId": value.id});
                           });
                         }
 
-                        await pushAndReplacement(context, CartScreen());
+                        await push(context, CartScreen());
                       },
                       buttonName: " Add to Cart",
                       buttonWidth: screenWidth(context, dividedBy: 1.5),

@@ -26,6 +26,7 @@ class _CartScreenState extends State<CartScreen> {
   // double newTotal = 0;
   double subTotal = 0;
   bool isLoading = true;
+  // bool isDelete = false;
   CartController cartController = CartController();
   List<CartResponseModel> cartItemsList = [];
   String? formattedDate;
@@ -35,6 +36,15 @@ class _CartScreenState extends State<CartScreen> {
     newTotal = await cartController.calculateSubTotal();
     DateTime currentDate = DateTime.now();
     formattedDate = DateFormat('d MMM yyyy').format(currentDate);
+    if (cartItemsList.isEmpty) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+
+    if (cartItemsList.isNotEmpty && cartItemsList[0].docId == null) {
+      pushAndReplacement(context, CartScreen());
+    }
 
     setState(() {
       isLoading = false;
@@ -108,51 +118,49 @@ class _CartScreenState extends State<CartScreen> {
                                 itemCount: cartItemsList.length,
                                 itemBuilder: (context, index) {
                                   return BuildCartItemsWidget(
-                                      onTap: () {
-                                        {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                shape:
-                                                    const RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.zero)),
-                                                title: Text('Remove From Cart'),
-                                                content: Text(
-                                                    'Do you want to Remove This item From The Cart ?'),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        cartController
-                                                            .deleteCartItem(
-                                                                docId: cartItemsList[
-                                                                        index]
-                                                                    .docId
-                                                                    .toString());
-                                                      });
-                                                      pushAndReplacement(
-                                                        context,
-                                                        const CartScreen(),
-                                                      );
-                                                    },
-                                                    child: Text('Remove'),
-                                                  ),
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                    child: Text('Cancel'),
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        }
-                                        ;
+                                      onTap: () async {
+                                        await showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.zero)),
+                                              title: Text('Remove From Cart'),
+                                              content: Text(
+                                                  'Do you want to Remove This item From The Cart ?'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      print(cartItemsList[index]
+                                                          .docId);
+                                                      cartController
+                                                          .deleteCartItem(
+                                                              docId: cartItemsList[
+                                                                      index]
+                                                                  .docId
+                                                                  .toString());
+                                                    });
+                                                    pushAndReplacement(
+                                                      context,
+                                                      const CartScreen(),
+                                                    );
+                                                  },
+                                                  child: Text('Remove'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text('Cancel'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
                                       },
                                       productId:
                                           cartItemsList[index].docId.toString(),
